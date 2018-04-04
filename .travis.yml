@@ -1,0 +1,25 @@
+language: go
+
+go:
+ - 1.9
+addons:
+  ssh_known_hosts:
+  - 127.0.0.1
+
+before_install:
+ - go get -u -v github.com/golang/lint/golint
+ - sudo apt-get update
+ - sudo apt-get install sshpass -y
+ - sudo apt-get install dnsmasq -y
+ - sudo apt-get install sshpass -y
+ - sudo apt-get --fix-missing install squid -y
+ - echo "root:ssh" | sudo chpasswd
+ - sshpass -p 'ssh' ssh -fN -D 12000 root@127.0.0.1
+ - sudo cp -rf ./.travisfile /etc/
+ - sudo squid
+
+script:
+  - diff -u <(echo -n) <(sudo gofmt -s -d ./)
+  - diff -u <(echo -n) <(sudo go vet ./...)
+  - diff -u <(echo -n) <(sudo golint)
+  - go test -v -race ./...

@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/haxii/fastproxy/bufiopool"
+	"github.com/balinor2017/fastproxy/bufiopool"
 )
 
 func TestInitHTTPCertAndAuth(t *testing.T) {
@@ -148,8 +148,8 @@ func TestWriteHTTPProxyReqAndReadHTTPProxyResp(t *testing.T) {
 	if err == nil {
 		t.Fatalf("unexpected error: onnected to proxy failed ")
 	}
-	if !strings.Contains(err.Error(), "connected to proxy failed with startline") {
-		t.Fatalf("expected error: connected to proxy failed with startline HTTP/1.1 502 Bad Gateway, but unexpected error: %s", err)
+	if !strings.Contains(err.Error(), "connected to proxy failed with start line") {
+		t.Fatalf("expected error: connected to proxy failed with start line HTTP/1.1 502 Bad Gateway, but unexpected error: %s", err)
 	}
 	err = conn.Close()
 	if err != nil {

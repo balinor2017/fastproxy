@@ -8,16 +8,16 @@ import (
 	"net"
 	"time"
 
-	"github.com/haxii/fastproxy/bufiopool"
-	"github.com/haxii/fastproxy/client"
-	"github.com/haxii/fastproxy/http"
-	"github.com/haxii/fastproxy/mitm"
-	"github.com/haxii/fastproxy/server"
-	"github.com/haxii/fastproxy/servertime"
-	"github.com/haxii/fastproxy/superproxy"
-	"github.com/haxii/fastproxy/usage"
-	"github.com/haxii/fastproxy/util"
-	"github.com/haxii/log"
+	"github.com/balinor2017/fastproxy/bufiopool"
+	"github.com/balinor2017/fastproxy/client"
+	"github.com/balinor2017/fastproxy/http"
+	"github.com/balinor2017/fastproxy/mitm"
+	"github.com/balinor2017/fastproxy/server"
+	"github.com/balinor2017/fastproxy/servertime"
+	"github.com/balinor2017/fastproxy/superproxy"
+	"github.com/balinor2017/fastproxy/usage"
+	"github.com/balinor2017/fastproxy/util"
+	"github.com/balinor2017/log"
 )
 
 // DefaultServerShutdownWaitTime used when ServerShutdownWaitTime not set
@@ -202,7 +202,6 @@ func (p *Proxy) serveConn(c net.Conn) error {
 		lastReadDeadlineTime  time.Time
 		lastWriteDeadlineTime time.Time
 	)
-
 	for {
 		if p.ServerReadTimeout > 0 {
 			lastReadDeadlineTime, err = p.updateReadDeadline(c, servertime.CoarseTimeNow(), lastReadDeadlineTime)
@@ -289,9 +288,6 @@ func (p *Proxy) serveConn(c net.Conn) error {
 			return util.ErrWrapper(err, "error HTTP traffic")
 		}
 
-		//TODO: test connection close & keep alive @xiangyu
-		//TODO: test if the server had closed the connection after ServerIdleDuration @xiangyu
-		//TODO: test different kinds of connection types in one TCP: proxyHTTP, proxyHTTPS .... @xiangyu
 		if req.ConnectionClose() {
 			break
 		}
@@ -328,7 +324,6 @@ func (p *Proxy) proxyHTTP(c net.Conn, req *Request) error {
 	if err := resp.WriteTo(writer); err != nil {
 		return err
 	}
-
 	// set hijacker
 	var hijacker Hijacker
 	if p.Handler.HijackerPool == nil {
@@ -346,7 +341,6 @@ func (p *Proxy) proxyHTTP(c net.Conn, req *Request) error {
 		p.Usage.AddOutgoingSize(uint64(respN))
 		return err
 	}
-
 	// make the request
 	reqReadN, reqWriteN, respN, err := p.client.Do(req, resp)
 	p.Usage.AddIncomingSize(uint64(reqReadN))
@@ -355,7 +349,6 @@ func (p *Proxy) proxyHTTP(c net.Conn, req *Request) error {
 		req.GetProxy().Usage.AddIncomingSize(uint64(respN))
 		req.GetProxy().Usage.AddOutgoingSize(uint64(reqWriteN))
 	}
-
 	return err
 }
 
@@ -404,6 +397,7 @@ func (p *Proxy) decryptHTTPS(c net.Conn, req *Request) error {
 	defer p.bufioPool.ReleaseReader(hijackedConnreader)
 
 	req.reqLine.Reset()
+	req.reader = nil
 	reqReadNum, err := req.parseStartLine(hijackedConnreader)
 	p.Usage.AddIncomingSize(uint64(reqReadNum))
 	if err != nil {

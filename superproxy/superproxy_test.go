@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/haxii/fastproxy/bufiopool"
+	"github.com/balinor2017/fastproxy/bufiopool"
 )
 
 // TestNewSuperProxy test new super proxy with http, https and socks5 types
@@ -149,7 +149,7 @@ L/ib
 	}
 	superProxy.tlsConfig.InsecureSkipVerify = true
 	pool := bufiopool.New(1, 1)
-	conn, err := superProxy.MakeTunnel(pool, "localhost:9999")
+	conn, err := superProxy.MakeTunnel(pool, "127.0.0.1:9999")
 	if err != nil {
 		t.Fatalf("unexpected error: %s", err.Error())
 	}
